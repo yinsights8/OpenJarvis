@@ -43,7 +43,7 @@ JARVIS_PID=$!
 # Wait up to 20s for backend to be ready
 echo "      Waiting for backend at http://127.0.0.1:8000..."
 READY=0
-for i in $(seq 1 20); do
+for i in $(seq 1 60); do
   if curl -s http://127.0.0.1:8000/v1/speech/health > /dev/null 2>&1; then
     READY=1
     break

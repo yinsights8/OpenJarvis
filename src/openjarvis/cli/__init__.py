@@ -24,6 +24,7 @@ from openjarvis.cli.feedback_cmd import feedback_group
 from openjarvis.cli.gateway_cmd import gateway
 from openjarvis.cli.host_cmd import host
 from openjarvis.cli.init_cmd import init
+from openjarvis.cli.listen_cmd import listen  # package imported for cli listen commnad 
 from openjarvis.cli.memory_cmd import memory
 from openjarvis.cli.model import model
 from openjarvis.cli.operators_cmd import operators
@@ -64,6 +65,7 @@ def cli(ctx: click.Context, verbose: bool, quiet: bool) -> None:
 cli.add_command(init, "init")
 cli.add_command(ask, "ask")
 cli.add_command(chat, "chat")
+cli.add_command(listen, "listen")  # intgrate cli listen command to enable stt
 cli.add_command(serve, "serve")
 cli.add_command(model, "model")
 cli.add_command(memory, "memory")
