@@ -257,18 +257,37 @@ export function InputArea() {
         complexity_tier: complexity?.tier,
         suggested_max_tokens: complexity?.suggested_max_tokens,
       };
-      // Check if the response has digest audio available
+      // Synthesize TTS audio for the response if speech is enabled
       let audioMeta: { url: string } | undefined;
-      try {
-        const digestRes = await fetch(`${getBase()}/api/digest`);
-        if (digestRes.ok) {
-          const digest = await digestRes.json();
-          if (digest.audio_available) {
-            audioMeta = { url: `${getBase()}/api/digest/audio` };
+      if (speechEnabled && accumulatedContent && !accumulatedContent.startsWith('Error:') && !accumulatedContent.startsWith('(Generation')) {
+        try {
+          const ttsRes = await fetch(`${getBase()}/v1/speech/tts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: accumulatedContent, voice_id: 'af_heart', backend: 'kokoro' }),
+          });
+          if (ttsRes.ok) {
+            const audioBlob = await ttsRes.blob();
+            audioMeta = { url: URL.createObjectURL(audioBlob) };
           }
+        } catch {
+          // TTS unavailable — response still shown as text
         }
-      } catch {
-        // Not a digest response or server unavailable — skip
+      }
+
+      // Check if the response has digest audio available (fallback)
+      if (!audioMeta) {
+        try {
+          const digestRes = await fetch(`${getBase()}/api/digest`);
+          if (digestRes.ok) {
+            const digest = await digestRes.json();
+            if (digest.audio_available) {
+              audioMeta = { url: `${getBase()}/api/digest/audio` };
+            }
+          }
+        } catch {
+          // Not a digest response or server unavailable — skip
+        }
       }
 
       updateLastAssistant(
