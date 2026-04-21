@@ -4,6 +4,52 @@
 
 ---
 
+## One-Command Start (Recommended)
+
+Start everything — Ollama, backend, and UI — with a single command from the project root:
+
+```bash
+# Web UI (opens http://localhost:5173 in browser)
+./start.sh
+
+# Tauri desktop app
+./start.sh --app
+```
+
+Press **Ctrl+C** to cleanly shut down the backend and Ollama together.
+
+Logs:
+- `/tmp/jarvis_serve.log` — Python backend output
+- `/tmp/ollama.log` — Ollama output
+
+---
+
+## How to Run Jarvis from Anywhere
+
+Add the `jarvis` command to Git Bash so it works from any directory.
+
+**One-time setup** — run this once:
+```bash
+source ~/.bashrc
+```
+
+After that, open any Git Bash terminal and type:
+```bash
+jarvis            # starts Ollama + backend + Web UI at localhost:5173
+jarvis --app      # starts Ollama + backend + Tauri desktop app
+```
+
+The `jarvis` command also works as the full CLI:
+```bash
+jarvis ask "what's the weather?"
+jarvis chat
+jarvis digest
+```
+
+> New terminals load `~/.bashrc` automatically — no need to source it again.
+
+---
+
 ## Every Day: Minimum Required
 
 **1. Verify Ollama is running** (usually auto-starts on Windows boot):
