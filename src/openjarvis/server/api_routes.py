@@ -771,6 +771,35 @@ async def transcribe_speech(request: Request):
     }
 
 
+@speech_router.post("/tts")
+async def synthesize_speech(request: Request):
+    """Synthesize text to speech and return WAV audio bytes."""
+    from fastapi.responses import Response as FastAPIResponse
+
+    body = await request.json()
+    text = body.get("text", "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Missing 'text' field")
+
+    voice_id = body.get("voice_id", "af_heart")
+    backend_key = body.get("backend", "kokoro")
+    speed = float(body.get("speed", 1.0))
+
+    import openjarvis.speech  # noqa: F401
+    from openjarvis.core.registry import TTSRegistry
+
+    if not TTSRegistry.contains(backend_key):
+        raise HTTPException(
+            status_code=501, detail=f"TTS backend '{backend_key}' not available"
+        )
+
+    backend_cls = TTSRegistry.get(backend_key)
+    tts = backend_cls()
+    result = tts.synthesize(text, voice_id=voice_id, speed=speed)
+
+    return FastAPIResponse(content=result.audio, media_type="audio/wav")
+
+
 @speech_router.get("/health")
 async def speech_health(request: Request):
     """Check if a speech backend is available."""
